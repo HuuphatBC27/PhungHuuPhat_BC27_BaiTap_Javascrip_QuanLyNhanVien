@@ -35,7 +35,7 @@ Staff.prototype.getRankStaff = function () {
 
 var staffs = [];
 
-function addStudent() {
+function addStaff() {
   //  B1 : DOM lấy value
   var account = document.getElementById("tknv").value;
   var fullName = document.getElementById("name").value;
@@ -76,10 +76,10 @@ function display(staffs) {
   //chứa nội dung html sẽ được thêm vào tbody
   var html = "";
 
-  //duyệt mảng student
+  //duyệt mảng staff
   for (var i = 0; i < staffs.length; i++) {
     var staff = staffs[i];
-    // với mỗi staff tạo ra 1 thẻ tr và từng thẻ td chứa thông tin  của chính student đó
+    // với mỗi staff tạo ra 1 thẻ tr và từng thẻ td chứa thông tin  của chính staff đó
 
     html += `
       <tr>
@@ -103,7 +103,7 @@ function display(staffs) {
 
   </tr>`;
   }
-  //   Đưa nội dung html được tạo động từ các đối tượng student vào bên trong tbody
+  //   Đưa nội dung html được tạo động từ các đối tượng staff vào bên trong tbody
   tbodyEl.innerHTML = html;
 }
 function validation() {
@@ -229,9 +229,9 @@ function minLength(value, limit) {
 
 function deleteStaff(staffAccount) {
   console.log("typeof của staffAccount", typeof staffAccount);
-  // Dùng id của student tìm ra và xoá student đó đi
+  // Dùng id của staff tìm ra và xoá staff đó đi
 
-  // Tìm chỉ mục của phần tử muốn xoá trong mảng students
+  // Tìm chỉ mục của phần tử muốn xoá trong mảng staffs
   var index = findStaff(staffAccount);
 
   if (index !== -1) {
@@ -255,9 +255,9 @@ function findStaff(staffAccount) {
   return index;
 }
 function selectStaff(staffAccount) {
-  // Dùng staffAccount để tìm student muốn cập nhât
+  // Dùng staffAccount để tìm staff muốn cập nhât
   var index = findStaff(staffAccount);
-  // Lấy ra staff muốn cập nhật từ mảng students
+  // Lấy ra staff muốn cập nhật từ mảng staffs
   var staff = staffs[index];
   // Đưa thông tin của staff này lên giao diện
   document.getElementById("tknv").value = staff.account;
@@ -286,7 +286,7 @@ function resetForm() {
   document.getElementById("btnThemNV").disabled = false;
 }
 
-function searchStudent() {
+function searchStaff() {
   // B1: DOM lấy value
   var searchValue = document.getElementById("searchName").value;
   searchValue = searchValue.toLowerCase();
@@ -299,13 +299,13 @@ function searchStudent() {
     var staff = staffs[i];
     var staffName = staff.name.toLowerCase();
     if (staffName.indexOf(searchValue) !== -1) {
-      newStudents.push(student);
+      newStaffs.push(staff);
     }
   }
   // B3: Hiển thị ra giao diện danh sách sinh viên đã lọc
   display(newStaffs);
 }
-function updateStudent() {
+function updateStaff() {
   // B1: DOM lấy value từ các input
   var account = document.getElementById("tknv").value;
   var fullName = document.getElementById("name").value;
@@ -316,7 +316,7 @@ function updateStudent() {
   var type = document.getElementById("chucvu").value;
   var workTime = +document.getElementById("gioLam").value;
 
-  // B2: Khởi tạo đối tượng student từ các giá trị input
+  // B2: Khởi tạo đối tượng staff từ các giá trị input
   var staff = new Staff(
     account,
     fullName,
@@ -327,8 +327,8 @@ function updateStudent() {
     type,
     workTime
   );
-  // Viết B1 + B2 ra 1 hàm getStudent và return về student
-  // => var student = getStudent()
+  // Viết B1 + B2 ra 1 hàm getStaff và return về staff
+  // => var staff = getS()
 
   // B3: Cập nhật
   // Tìm index của sinh viên muốn cập nhật
