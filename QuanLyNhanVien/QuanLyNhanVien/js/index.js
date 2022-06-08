@@ -17,8 +17,20 @@ function Staff(
   this.type = type;
   this.workTime = workTime;
 }
-Staff.prototype.totalSalary = function () {
-  return 2000000;
+Staff.prototype.totalSalary = function (type) {
+  switch (this.type) {
+    case "sep":
+      return this.price * 3;
+
+    case "truongPhong":
+      return this.price * 2;
+
+    case "nhanVien":
+      return this.price * 2;
+
+    default:
+      return "không phải nhân viên";
+  }
 };
 
 Staff.prototype.getRankStaff = function () {
@@ -34,6 +46,30 @@ Staff.prototype.getRankStaff = function () {
 };
 
 var staffs = [];
+init();
+function init() {
+  // B1: Lấy data từ localStorage
+  // Khi lấy data từ localStorage lên, nếu data là array/object (đã bị stringify) thì cần dùng hàm JSON.parse để chuyển data về lại array/object
+  staffs = JSON.parse(localStorage.getItem("staffs")) || [];
+
+  // Bởi vì JSON.stringify tự động loại bỏ các phương thức bên trong object => các object staff bên trong mảng bị mất hàm calcScore
+
+  for (var i = 0; i < staffs.length; i++) {
+    var staff = staffs[i];
+    staffs[i] = new Staff(
+      staff.account,
+      staff.fullName,
+      staff.email,
+      staff.password,
+      staff.date,
+      staff.price,
+      staff.type,
+      staff.workTime
+    );
+  }
+
+  display(staffs);
+}
 
 function addStaff() {
   //  B1 : DOM lấy value
@@ -68,6 +104,7 @@ function addStaff() {
   //B3 : hiển thị staff vừa thêm lên trên giao diện (table)
   //thêm staff vừa tạo vào mảng table
   staffs.push(staff);
+  localStorage.setItem("staffs", JSON.stringify(staffs));
   display(staffs);
 }
 function display(staffs) {
@@ -96,7 +133,7 @@ function display(staffs) {
     >
       Xoá
     </button></td>
-     <td> <button class = "btn btn-success" onclick = "selectStaff('${
+     <td> <button  data-target ="#myModal" data-toggle="modal" class = "btn btn-success" onclick = "selectStaff('${
        staff.account
      }')"> cập nhật</button>
      </td>
@@ -172,7 +209,6 @@ function validation() {
     document.getElementById("tbMatKhau").innerHTML =
       "Mật khẩu  không đúng định dạng";
   } else {
-    // Đúng
     document.getElementById("tbMatKhau").innerHTML = "";
   }
 
@@ -187,7 +223,10 @@ function validation() {
   }
 
   // Lương cơ bản
-  if (!isRequired(price)) {
+  if (price < 1000000 || price > 20000000) {
+    document.getElementById("tbLuongCB").innerHTML =
+      "lương cơ bản không phù hợp";
+  } else if (!isRequired(price)) {
     isValid = false;
     document.getElementById("tbLuongCB").innerHTML =
       "lương cơ bản không được để trống";
@@ -198,7 +237,9 @@ function validation() {
   //chức vụ
 
   // số giờ làm
-  if (!isRequired(workTime)) {
+  if (workTime < 80 || workTime > 200) {
+    document.getElementById("tbGiolam").innerHTML = "số giờ làm không hợp lệ";
+  } else if (!isRequired(workTime)) {
     isValid = false;
 
     document.getElementById("tbGiolam").innerHTML =
@@ -237,6 +278,7 @@ function deleteStaff(staffAccount) {
   if (index !== -1) {
     // Xoá 1 phần tử ở 1 vị trí bất kì trong mảng
     staffs.splice(index, 1);
+    localStorage.setItem("staffs", JSON.stringify(staffs));
 
     // Gọi lại hàm display để cập nhật giao diện mới
     display(staffs);
@@ -269,7 +311,6 @@ function selectStaff(staffAccount) {
   document.getElementById("chucvu").value = staff.type;
   document.getElementById("gioLam").value = staff.workTime;
 
-  // disabled input Mã Sinh Viên và button Thêm Sinh Viên
   document.getElementById("tknv").disabled = true;
   document.getElementById("btnThemNV").disabled = true;
 }
@@ -281,29 +322,26 @@ function resetForm() {
   document.getElementById("datepicker").value = "";
   document.getElementById("luongCB").value = "";
   document.getElementById("chucvu").value = "";
-  document.getElementById("giolam").value = "";
+  document.getElementById("gioLam").value = "";
   document.getElementById("tknv").disabled = false;
   document.getElementById("btnThemNV").disabled = false;
 }
-
+// tìm kiếm loại học sinh
 function searchStaff() {
   // B1: DOM lấy value
   var searchValue = document.getElementById("searchName").value;
-  searchValue = searchValue.toLowerCase();
-  // B2: Lọc ra 1 mảng mới thoả mãn điều kiện giá trị searchValue phải bằng với tên SV
-  // 'Nguyễn Đức Hiếu'.indexOf("Hiếu") => 11
-  // 'Nguyễn Đức Hiếu'.indexOf("Khải") => -1
 
   var newStaffs = [];
   for (var i = 0; i < staffs.length; i++) {
     var staff = staffs[i];
-    var staffName = staff.name.toLowerCase();
-    if (staffName.indexOf(searchValue) !== -1) {
+
+    if (staff.getRankStaff().indexOf(searchValue) !== -1) {
       newStaffs.push(staff);
     }
   }
   // B3: Hiển thị ra giao diện danh sách sinh viên đã lọc
   display(newStaffs);
+  resetForm();
 }
 function updateStaff() {
   // B1: DOM lấy value từ các input
@@ -335,6 +373,7 @@ function updateStaff() {
   var index = findStaff(staff.account);
   // Cập nhật
   staffs[index] = staff;
+  localStorage.setItem("staffs", JSON.stringify(staffs));
 
   // B4: Gọi hàm display để hiển thị kết quả mới nhất lên giao diện
   display(staffs);
